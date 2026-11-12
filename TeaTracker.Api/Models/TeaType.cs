@@ -1,5 +1,8 @@
 ﻿namespace TeaTracker.Api.Models;
 
-public class TeaType
+public enum TeaType
 {
+    Green,
+    Black,
+    HerbalTea,
 }

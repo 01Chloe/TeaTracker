@@ -1,8 +1,10 @@
 ﻿namespace TeaTracker.Api.Models;
 
-public class Tasting(int id, int rate, DateTime date)
+public class Tasting
 {
-    public int Id { get; } = id;
-    public int? Rate { get; set; } = rate;
-    public DateTime Date { get; set; } = date;
+    public int Id { get; set; }
+    public int Rating { get; set; }
+    public DateTime Date { get; set; }
+    public int TeaId { get; set; }
+    public Tea Tea { get; set; } = null!;
 }

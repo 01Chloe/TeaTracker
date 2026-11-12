@@ -1,10 +1,13 @@
 ﻿namespace TeaTracker.Api.Models;
 
-public class Tea(int id, string title, string brand, int price, int teaCount)
+public class Tea
 {
-    public int Id { get; } = id;
-    public string Title { get; set; } = title;
-    public string Brand { get; set; } = brand;
-    public int Price { get; set; } = price;
-    public int TeaCount { get; set; } = teaCount;
+    public int Id { get; set; }
+    public required string Title { get; set; }
+    public required string Brand { get; set; }
+    public decimal Price { get; set; }
+    public int TeaBagCount { get; set; }
+    public TeaType TeaType { get; set; }
+    public List<Tasting> Tastings { get; set; } = [];
+    
 }
