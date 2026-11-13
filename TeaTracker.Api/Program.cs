@@ -19,6 +19,7 @@ builder.Services.AddDbContext<TeaTrackerDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
 
 builder.Services.AddScoped<TeaService>();
+builder.Services.AddScoped<TastingService>();
 
 var app = builder.Build();
 
