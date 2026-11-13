@@ -12,10 +12,10 @@ public class CreateTeaRequest
     public required string Brand { get; set; }
 
     [Range(0, 10000)]
-    public decimal Price { get; set; }
+    public required decimal Price { get; set; }
 
     [Range(0, 10000)]
-    public int TeaBagCount { get; set; }
+    public required int TeaBagCount { get; set; }
 
     [EnumDataType(typeof(TeaType))]
     public TeaType TeaType { get; set; }
