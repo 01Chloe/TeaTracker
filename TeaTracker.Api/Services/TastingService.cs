@@ -55,4 +55,26 @@ public class TastingService(TeaTrackerDbContext db)
 
         return new CreateTastingResult(CreateTastingStatus.Created, response);
     }
+
+    public async Task<bool> DeleteAsync(int teaId, int tastingId)
+    {
+        Tasting? tasting = await db.Tastings.FirstOrDefaultAsync(t => t.Id == tastingId && t.TeaId == teaId);
+        Tea? tea = await db.Teas.FirstOrDefaultAsync(t => t.Id == teaId);
+
+        if (tea is null)
+        {
+            return false;
+        }
+
+        if (tasting is null)
+        {
+            return false;
+        }
+
+        tea.TeaBagCount++;
+
+        db.Tastings.Remove(tasting);
+        await db.SaveChangesAsync();
+        return true;
+    }
 }

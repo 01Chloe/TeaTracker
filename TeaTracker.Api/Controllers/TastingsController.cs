@@ -41,4 +41,17 @@ public class TastingsController(TastingService tastingService) : ControllerBase
                 throw new InvalidOperationException($"Statut inattendu : {result.Status}");
         }
     }
+
+    [HttpDelete("{tastingId:int}")]
+    public async Task<IActionResult> Delete(int teaId, int tastingId)
+    {
+        bool delete = await tastingService.DeleteAsync(teaId, tastingId);
+
+        if (!delete)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
 }
