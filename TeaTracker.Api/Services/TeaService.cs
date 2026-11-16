@@ -74,4 +74,65 @@ public class TeaService(TeaTrackerDbContext db)
             tea.TeaType
         );
     }
+
+    public async Task<TeaResponse?> UpdateAsync(int id, UpdateTeaRequest request)
+    {
+        Tea? tea = await db.Teas.FirstOrDefaultAsync(t => t.Id == id);
+
+        if (tea is null)
+        {
+            return null;
+        }
+
+        if (request.Title is not null)
+        {
+            tea.Title = request.Title;
+        }
+
+        if (request.Brand is not null)
+        {
+            tea.Brand = request.Brand;
+        }
+
+        if (request.Price.HasValue)
+        {
+            tea.Price = request.Price.Value;
+        }
+
+        if (request.TeaBagCount.HasValue)
+        {
+            tea.TeaBagCount = request.TeaBagCount.Value;
+        }
+
+        if (request.TeaType.HasValue)
+        {
+            tea.TeaType = request.TeaType.Value;
+        }
+
+        await db.SaveChangesAsync();
+
+        return new TeaResponse(
+            tea.Id,
+            tea.Title,
+            tea.Brand,
+            tea.Price,
+            tea.TeaBagCount,
+            tea.TeaType
+        );
+    }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        Tea? tea = await db.Teas.FirstOrDefaultAsync(t => t.Id == id);
+
+        if (tea is null)
+        {
+            return false;
+        }
+
+        db.Teas.Remove(tea);
+
+        await db.SaveChangesAsync();
+        return true;
+    }
 }

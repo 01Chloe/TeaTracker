@@ -5,10 +5,10 @@ namespace TeaTracker.Api.Dtos;
 
 public class CreateTeaRequest
 {
-    [Required, StringLength(100)]
+    [Required, StringLength(100, MinimumLength = 1)]
     public required string Title { get; set; }
 
-    [Required, StringLength(100)]
+    [Required, StringLength(100, MinimumLength = 1)]
     public required string Brand { get; set; }
 
     [Range(0, 10000)]

@@ -36,4 +36,30 @@ public class TeasController(TeaService teaService) : ControllerBase
 
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
+
+    [HttpPatch("{id:int}")]
+    public async Task<ActionResult<TeaResponse>> Update(int id, UpdateTeaRequest request)
+    {
+        TeaResponse? update = await teaService.UpdateAsync(id, request);
+
+        if (update is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(update);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        bool delete = await teaService.DeleteAsync(id);
+
+        if (!delete)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
 }
