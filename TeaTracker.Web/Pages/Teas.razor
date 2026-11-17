@@ -6,6 +6,24 @@
 
 <h1>Mes thés</h1>
 
+<div class="row mb-3">
+    <div class="col-auto">
+        <select class="form-select" @bind="selectedType">
+            <option value="">--Selectionne un type--</option>
+            @foreach (TeaType type in Enum.GetValues<TeaType>())
+            {
+                <option value="@type">@type.ToLabel()</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto">
+        <input class="form-control" placeholder="Rechercher" @bind="search" />
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary" @onclick="LoadAsync">Filtrer</button>
+    </div>
+</div>
+
 @if (errorMessage is not null)
 {
     <div class="alert alert-danger">@errorMessage</div>
@@ -36,7 +54,7 @@ else
                 <tr>
                     <td>@tea.Title</td>
                     <td>@tea.Brand</td>
-                    <td>@tea.TeaType</td>
+                    <td>@tea.TeaType.ToLabel()</td>
                     <td>@tea.Price.ToString("0.00") €</td>
                     <td>@tea.TeaBagCount</td>
                 </tr>
@@ -48,12 +66,22 @@ else
 @code {
     private List<TeaResponse>? teas;
     private string? errorMessage;
+    private TeaType? selectedType;
+    private string? search;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        errorMessage = null;
+        teas = null;
+
         try
         {
-            teas = await Api.GetTeasAsync();
+            teas = await Api.GetTeasAsync(selectedType, search);
         }
         catch (HttpRequestException)
         {
