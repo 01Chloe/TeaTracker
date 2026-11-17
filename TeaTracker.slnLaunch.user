@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "TeaTracker.Api\\TeaTracker.Api.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "TeaTracker.Web\\TeaTracker.Web.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

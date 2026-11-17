@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="TeaTracker.Api/TeaTracker.Api.csproj" />
+  <Project Path="TeaTracker.Web/TeaTracker.Web.csproj" Id="0483aad3-6103-4da8-b691-28087674243d" />
 </Solution>
