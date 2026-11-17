@@ -1,0 +1,80 @@
+﻿@page "/teas/add"
+@inject TeaApiClient Api
+@inject NavigationManager Navigation
+
+<PageTitle>Ajouter un thé</PageTitle>
+
+<h1>Ajouter un thé</h1>
+
+@if (errorMessage is not null)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<EditForm Model="model" OnValidSubmit="SubmitAsync">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label class="form-label" for="title">Nom</label>
+        <InputText id="title" class="form-control" @bind-Value="model.Title" />
+        <ValidationMessage For="() => model.Title" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="brand">Marque</label>
+        <InputText id="brand" class="form-control" @bind-Value="model.Brand" />
+        <ValidationMessage For="() => model.Brand" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="type">Type</label>
+        <InputSelect id="type" class="form-select" @bind-Value="model.TeaType">
+            @foreach (TeaType type in Enum.GetValues<TeaType>())
+            {
+                <option value="@type">@type.ToLabel()</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="price">Prix (€)</label>
+        <InputNumber id="price" class="form-control" @bind-Value="model.Price" />
+        <ValidationMessage For="() => model.Price" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="bags">Nombre de sachets</label>
+        <InputNumber id="bags" class="form-control" @bind-Value="model.TeaBagCount" />
+        <ValidationMessage For="() => model.TeaBagCount" />
+    </div>
+
+    <button type="submit" class="btn btn-primary" disabled="@isSubmitting">Ajouter</button>
+    <a href="teas" class="btn btn-link">Annuler</a>
+
+</EditForm>
+
+@code {
+    private CreateTeaRequest model = new();
+    private string? errorMessage;
+    private bool isSubmitting;
+
+    private async Task SubmitAsync()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        try
+        {
+            await Api.CreateTeaAsync(model);
+            Navigation.NavigateTo("teas");
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = ex.StatusCode is null ? "Impossible de contacter l'API." : $"L'enregistrement a échoué (code {(int)ex.StatusCode}).";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}
