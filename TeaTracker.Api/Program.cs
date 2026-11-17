@@ -21,6 +21,14 @@ builder.Services.AddDbContext<TeaTrackerDbContext>(options =>
 builder.Services.AddScoped<TeaService>();
 builder.Services.AddScoped<TastingService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("BlazorClient", policy =>
+        policy.WithOrigins("https://localhost:7242")
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -30,6 +38,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("BlazorClient");
 
 app.UseAuthorization();
 
