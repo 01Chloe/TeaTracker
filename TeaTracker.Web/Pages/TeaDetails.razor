@@ -1,0 +1,76 @@
+﻿@page "/teas/{Id:int}"
+@inject TeaApiClient Api
+
+<PageTitle>@(tea?.Title ?? "Détails")</PageTitle>
+
+<h1>@(tea?.Title ?? "Détails")</h1>
+
+@if (errorMessage is not null)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+else if (tea is null)
+{
+    <p>Thé introuvable</p>
+}
+else
+{
+    <p><span class="fw-bold">Marque : </span>@tea.Brand</p>
+    <p><span class="fw-bold">Type : </span>@tea.TeaType</p>
+    <p><span class="fw-bold">Prix : </span>@tea.Price €</p>
+    <p><span class="fw-bold">Stock : </span>@tea.TeaBagCount sachets de thé</p>
+
+
+    @if (tastings is null)
+    {
+        <p>Pas de dégustations pour ce thé</p>
+    }
+    else if (tastings.Count == 0)
+    {
+        <p>Pas de dégustations pour ce thé</p>
+    }
+    else
+    {
+        <h2 class="fs-3">Dégustations :</h2>
+        <p><span class="fw-bold">Moyenne : </span>@tastings.Average(t => t.Rating)</p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Note (/5)</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (TastingResponse tasting in tastings)
+                {
+                    <tr>
+                        <td>@tasting.Rating</td>
+                        <td>@tasting.Date.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private TeaResponse? tea;
+    private List<TastingResponse>? tastings;
+    private string? errorMessage;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            tea = await Api.GetTeaAsync(Id);
+            tastings = await Api.GetTastingsAsync(Id);
+        }
+        catch (HttpRequestException)
+        {
+            errorMessage = "Impossible de contacter l'API.";
+        }
+    }
+}

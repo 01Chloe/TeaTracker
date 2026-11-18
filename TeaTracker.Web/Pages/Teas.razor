@@ -54,7 +54,9 @@ else
             @foreach (TeaResponse tea in teas)
             {
                 <tr>
-                    <td>@tea.Title</td>
+                    <td>
+                        <a href="teas/@tea.Id">@tea.Title</a>
+                    </td>
                     <td>@tea.Brand</td>
                     <td>@tea.TeaType.ToLabel()</td>
                     <td>@tea.Price.ToString("0.00") €</td>
