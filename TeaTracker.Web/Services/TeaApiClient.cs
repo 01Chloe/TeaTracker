@@ -75,7 +75,7 @@ public class TeaApiClient(HttpClient http)
 
     public async Task DeleteTastingAsync(int teaId, int tastingId)
     {
-        HttpResponseMessage response = await http.DeleteAsync($"api/teas/{teaId}/tasting/{tastingId}");
+        HttpResponseMessage response = await http.DeleteAsync($"api/teas/{teaId}/tastings/{tastingId}");
         response.EnsureSuccessStatusCode();
     }
 }

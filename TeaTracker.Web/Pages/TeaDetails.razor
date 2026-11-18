@@ -9,36 +9,40 @@
 {
     <div class="alert alert-danger">@errorMessage</div>
 }
+
+@if (isLoading)
+{
+    <p>Chargement...</p>
+}
 else if (tea is null)
 {
-    <p>Thé introuvable</p>
+    if (errorMessage is null)
+    {
+        <p>Thé introuvable</p>
+    }
 }
 else
 {
     <p><span class="fw-bold">Marque : </span>@tea.Brand</p>
-    <p><span class="fw-bold">Type : </span>@tea.TeaType</p>
-    <p><span class="fw-bold">Prix : </span>@tea.Price €</p>
+    <p><span class="fw-bold">Type : </span>@tea.TeaType.ToLabel()</p>
+    <p><span class="fw-bold">Prix : </span>@tea.Price.ToString("0.00") €</p>
     <p><span class="fw-bold">Stock : </span>@tea.TeaBagCount sachets de thé</p>
 
-
-    @if (tastings is null)
-    {
-        <p>Pas de dégustations pour ce thé</p>
-    }
-    else if (tastings.Count == 0)
+    @if (tastings is null || tastings.Count == 0)
     {
         <p>Pas de dégustations pour ce thé</p>
     }
     else
     {
         <h2 class="fs-3">Dégustations :</h2>
-        <p><span class="fw-bold">Moyenne : </span>@tastings.Average(t => t.Rating)</p>
+        <p><span class="fw-bold">Moyenne : </span>@(tastings.Average(t => t.Rating).ToString("0.0")) / 5</p>
 
         <table class="table">
             <thead>
                 <tr>
                     <th>Note (/5)</th>
                     <th>Date</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -47,6 +51,9 @@ else
                     <tr>
                         <td>@tasting.Rating</td>
                         <td>@tasting.Date.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>
+                            <button @onclick="() => DeleteTastingAsync(tasting.Id)" class="btn btn-outline-danger p-1 lh-1" title="Supprimer">&times;</button>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -60,17 +67,45 @@ else
     private TeaResponse? tea;
     private List<TastingResponse>? tastings;
     private string? errorMessage;
+    private bool isLoading = true;
 
     protected override async Task OnParametersSetAsync()
     {
+        isLoading = true;
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        errorMessage = null;
+
         try
         {
             tea = await Api.GetTeaAsync(Id);
-            tastings = await Api.GetTastingsAsync(Id);
+            tastings = tea is null ? null : await Api.GetTastingsAsync(Id);
         }
         catch (HttpRequestException)
         {
+            tea = null;
+            tastings = null;
             errorMessage = "Impossible de contacter l'API.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task DeleteTastingAsync(int tastingId)
+    {
+        try
+        {
+            await Api.DeleteTastingAsync(Id, tastingId);
+            await LoadAsync();
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = $"Échec de la suppression (code {(int?)ex.StatusCode}).";
         }
     }
 }
