@@ -1,5 +1,6 @@
 ﻿@page "/teas/{Id:int}"
 @inject TeaApiClient Api
+@inject NavigationManager Navigation
 
 <PageTitle>@(tea?.Title ?? "Détails")</PageTitle>
 
@@ -28,7 +29,32 @@ else
     <p><span class="fw-bold">Prix : </span>@tea.Price.ToString("0.00") €</p>
     <p><span class="fw-bold">Stock : </span>@tea.TeaBagCount sachets de thé</p>
 
+    <button class="btn btn-outline-danger mb-3 me-1" @onclick="OpenDeleteModal">Supprimer ce thé</button>
     <a href="teas/@Id/tasting/add" class="btn btn-success mb-3 @(tea.TeaBagCount == 0 ? "disabled" : "")">Ajouter une dégustation</a>
+
+    @if (showDeleteModal)
+    {
+        <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle" @onclick="CloseDeleteModal">
+            <div class="modal-dialog modal-dialog-centered" @onclick:stopPropagation="true">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p>Supprimer ce thé ?</p>
+                        <button type="button" class="btn-close" aria-label="Fermer" @onclick="CloseDeleteModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Le thé <strong>@tea.Title</strong> et toutes ses dégustations seront supprimés définitivement
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" @onclick="CloseDeleteModal" disabled="@isDeleting">Annuler</button>
+                        <button type="button" class="btn btn-danger" @onclick="DeleteTeaAsync" disabled="@isDeleting">Supprimer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-backdrop fade show"></div>
+    }
 
     @if (tastings is null || tastings.Count == 0)
     {
@@ -52,7 +78,7 @@ else
                 {
                     <tr>
                         <td>@tasting.Rating</td>
-                        <td>@tasting.Date.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@tasting.Date.ToLocalTime().ToString("dd/MM/yyyy")</td>
                         <td>
                             <button @onclick="() => DeleteTastingAsync(tasting.Id)" class="btn btn-outline-danger p-1 lh-1" title="Supprimer">&times;</button>
                         </td>
@@ -70,6 +96,8 @@ else
     private List<TastingResponse>? tastings;
     private string? errorMessage;
     private bool isLoading = true;
+    private bool showDeleteModal;
+    private bool isDeleting;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -108,6 +136,39 @@ else
         catch (HttpRequestException ex)
         {
             errorMessage = $"Échec de la suppression (code {(int?)ex.StatusCode}).";
+        }
+    }
+
+    private async Task OpenDeleteModal()
+    {
+        showDeleteModal = true;
+    }
+
+    private void CloseDeleteModal()
+    {
+        if (!isDeleting)
+        {
+            showDeleteModal = false;
+        }
+    }
+
+    private async Task DeleteTeaAsync()
+    {
+        isDeleting = true;
+
+        try
+        {
+            await Api.DeleteTeaAsync(Id);
+            Navigation.NavigateTo("teas");
+        } 
+        catch (HttpRequestException ex)
+        {
+            showDeleteModal = false;
+            errorMessage = $"Échec de la suppression (code {(int?)ex.StatusCode}).";
+        }
+        finally
+        {
+            isDeleting = false;
         }
     }
 }

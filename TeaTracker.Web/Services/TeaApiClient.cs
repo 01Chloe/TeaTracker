@@ -53,7 +53,7 @@ public class TeaApiClient(HttpClient http)
         return await response.Content.ReadFromJsonAsync<TeaResponse>(JsonOptions);
     }
 
-    public async Task DeteleTeaAsync(int id)
+    public async Task DeleteTeaAsync(int id)
     {
         HttpResponseMessage response = await http.DeleteAsync($"api/teas/{id}");
         response.EnsureSuccessStatusCode();
