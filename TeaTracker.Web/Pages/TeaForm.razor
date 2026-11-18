@@ -15,19 +15,19 @@
     <DataAnnotationsValidator />
 
     <div class="mb-3">
-        <label class="form-label" for="title">Nom</label>
+        <label class="form-label" for="title">Nom <sup class="text-danger">*</sup></label>
         <InputText id="title" class="form-control" @bind-Value="model.Title" />
         <ValidationMessage For="() => model.Title" />
     </div>
 
     <div class="mb-3">
-        <label class="form-label" for="brand">Marque</label>
+        <label class="form-label" for="brand">Marque <sup class="text-danger">*</sup></label>
         <InputText id="brand" class="form-control" @bind-Value="model.Brand" />
         <ValidationMessage For="() => model.Brand" />
     </div>
 
     <div class="mb-3">
-        <label class="form-label" for="type">Type</label>
+        <label class="form-label" for="type">Type <sup class="text-danger">*</sup></label>
         <InputSelect id="type" class="form-select" @bind-Value="model.TeaType">
             @foreach (TeaType type in Enum.GetValues<TeaType>())
             {
@@ -37,13 +37,13 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label" for="price">Prix (€)</label>
+        <label class="form-label" for="price">Prix (€) <sup class="text-danger">*</sup></label>
         <InputNumber id="price" class="form-control" @bind-Value="model.Price" />
         <ValidationMessage For="() => model.Price" />
     </div>
 
     <div class="mb-3">
-        <label class="form-label" for="bags">Nombre de sachets</label>
+        <label class="form-label" for="bags">Nombre de sachets <sup class="text-danger">*</sup></label>
         <InputNumber id="bags" class="form-control" @bind-Value="model.TeaBagCount" />
         <ValidationMessage For="() => model.TeaBagCount" />
     </div>

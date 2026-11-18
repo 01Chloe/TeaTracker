@@ -28,6 +28,8 @@ else
     <p><span class="fw-bold">Prix : </span>@tea.Price.ToString("0.00") €</p>
     <p><span class="fw-bold">Stock : </span>@tea.TeaBagCount sachets de thé</p>
 
+    <a href="teas/@Id/tasting/add" class="btn btn-success mb-3 @(tea.TeaBagCount == 0 ? "disabled" : "")">Ajouter une dégustation</a>
+
     @if (tastings is null || tastings.Count == 0)
     {
         <p>Pas de dégustations pour ce thé</p>

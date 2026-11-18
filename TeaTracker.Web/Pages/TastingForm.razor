@@ -1,0 +1,71 @@
+﻿@page "/teas/{TeaId:int}/tasting/add"
+@inject TeaApiClient Api
+@inject NavigationManager Navigation
+
+<PageTitle>Ajouter une dégustation</PageTitle>
+
+<h1>Ajouter une dégustation</h1>
+
+@if (errorMessage is not null)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<EditForm Model="model" OnValidSubmit="SubmitAsync">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label class="form-label" for="rating">Note <sup class="text-danger">*</sup></label>
+        <InputSelect id="rating" class="form-control" @bind-Value="model.Rating">
+            @for (int i = 0; i <= 5; i++)
+            {
+                <option value="@i">@i</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="() => model.Rating" />
+    </div>
+
+    <div class="mb-3">
+        <label classform-label for="date">Date</label>
+        <InputDate id="date" class="form-control" @bind-Value="model.Date" />
+        <ValidationMessage For="() => model.Date" />
+    </div>
+
+    <button type="submit" class="btn btn-primary" disabled="@isSubmitting">Ajouter</button>
+    <a href="teas/@TeaId" class="btn btn-link">Annuler</a>
+</EditForm>
+
+@code {
+    [Parameter] public int TeaId { get; set; }
+
+    private CreateTastingRequest model = new();
+    private string? errorMessage;
+    private bool isSubmitting;
+
+    private async Task SubmitAsync()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        try
+        {
+            await Api.CreateTastingAsync(TeaId, model);
+            Navigation.NavigateTo($"teas/{TeaId}");
+        }
+        catch (HttpRequestException ex)
+        {
+            if (ex.StatusCode == HttpStatusCode.Conflict)
+            {
+                errorMessage = "Plus de sachets disponibles";
+            }
+            else
+            {
+                errorMessage = ex.StatusCode is null ? "Impossible de contacter l'API." : $"L'enregistrement a échoué (code {(int)ex.StatusCode}).";
+            }
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}
