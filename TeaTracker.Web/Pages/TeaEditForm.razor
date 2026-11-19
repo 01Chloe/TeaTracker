@@ -1,0 +1,123 @@
+﻿@page "/teas/{Id:int}/edit"
+@inject TeaApiClient Api
+@inject NavigationManager Navigation
+
+<PageTitle>Modifier le thé</PageTitle>
+
+<h1>Modifier le thé</h1>
+
+@if (errorMessage is not null)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+@if (isLoading)
+{
+    <p><em>Chargement...</em></p>
+}
+else if (form is null)
+{
+    <p>Ce thé n'existe pas</p>
+    <a href="teas">Retour à la liste</a>
+}
+else
+{
+    <EditForm Model="form" OnValidSubmit="SaveAsync">
+        <DataAnnotationsValidator />
+
+        <div class="mb-3">
+            <label class="form-label" for="title">Nom <sup class="text-danger">*</sup></label>
+            <InputText id="title" class="form-control" @bind-Value="form.Title" />
+            <ValidationMessage For="() => form.Title" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="title">Marque <sup class="text-danger">*</sup></label>
+            <InputText id="title" class="form-control" @bind-Value="form.Brand" />
+            <ValidationMessage For="() => form.Brand" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="type">Type <sup class="text-danger">*</sup></label>
+            <InputSelect id="type" class="form-select" @bind-Value="form.TeaType">
+                @foreach (TeaType type in Enum.GetValues<TeaType>())
+                {
+                    <option value="@type">@type.ToLabel()</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => form.TeaType" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="title">Prix <sup class="text-danger">*</sup></label>
+            <InputNumber id="title" class="form-control" @bind-Value="form.Price" />
+            <ValidationMessage For="() => form.Price" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="title">Nombre de sachets <sup class="text-danger">*</sup></label>
+            <InputNumber id="title" class="form-control" @bind-Value="form.TeaBagCount" />
+            <ValidationMessage For="() => form.TeaBagCount" />
+        </div>
+
+        <button type="submit" class="btn btn-outline-primary" disabled="@isSubmitting">Enregistrer</button>
+        <a href="teas/@Id" class="btn btn-outline-danger">Annuler</a>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private string? errorMessage;
+    private bool isSubmitting;
+    private UpdateTeaRequest? form;
+    private bool isLoading = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            TeaResponse? tea = await Api.GetTeaAsync(Id);
+
+            form = tea is null ? null : new UpdateTeaRequest()
+            {
+                Title = tea.Title,
+                Brand = tea.Brand,
+                Price = tea.Price,
+                TeaBagCount = tea.TeaBagCount,
+                TeaType = tea.TeaType
+            };
+        }
+        catch (HttpRequestException)
+        {
+            errorMessage = "Impossible de charger le thé";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        try
+        {
+            await Api.UpdateTeaAsync(Id, form!);
+            Navigation.NavigateTo($"teas/{Id}");
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = $"Échec de la modification (code {(int?)ex.StatusCode})";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}

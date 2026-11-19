@@ -53,6 +53,12 @@ public class TeaApiClient(HttpClient http)
         return await response.Content.ReadFromJsonAsync<TeaResponse>(JsonOptions);
     }
 
+    public async Task UpdateTeaAsync(int id, UpdateTeaRequest request)
+    {
+        HttpResponseMessage response = await http.PatchAsJsonAsync($"api/teas/{id}", request, JsonOptions);
+        response.EnsureSuccessStatusCode();
+    }
+
     public async Task DeleteTeaAsync(int id)
     {
         HttpResponseMessage response = await http.DeleteAsync($"api/teas/{id}");

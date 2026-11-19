@@ -29,8 +29,10 @@ else
     <p><span class="fw-bold">Prix : </span>@tea.Price.ToString("0.00") €</p>
     <p><span class="fw-bold">Stock : </span>@tea.TeaBagCount sachets de thé</p>
 
-    <button class="btn btn-outline-danger mb-3 me-1" @onclick="OpenDeleteModal">Supprimer ce thé</button>
-    <a href="teas/@Id/tasting/add" class="btn btn-success mb-3 @(tea.TeaBagCount == 0 ? "disabled" : "")">Ajouter une dégustation</a>
+    <a href="teas/@Id/edit" class="btn btn-outline-primary mb-3 me-1">Modifier ce thé</a>
+    <button class="btn btn-outline-danger mb-3" @onclick="OpenDeleteModal">Supprimer ce thé</button>
+    <br />
+    <a href="teas/@Id/tasting/add" class="btn btn-outline-success mb-3 @(tea.TeaBagCount == 0 ? "disabled" : "")">Ajouter une dégustation</a>
 
     @if (showDeleteModal)
     {
@@ -47,8 +49,8 @@ else
                         </p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" @onclick="CloseDeleteModal" disabled="@isDeleting">Annuler</button>
-                        <button type="button" class="btn btn-danger" @onclick="DeleteTeaAsync" disabled="@isDeleting">Supprimer</button>
+                        <button type="button" class="btn btn-outline-primary" @onclick="CloseDeleteModal" disabled="@isDeleting">Annuler</button>
+                        <button type="button" class="btn btn-outline-danger" @onclick="DeleteTeaAsync" disabled="@isDeleting">Supprimer</button>
                     </div>
                 </div>
             </div>

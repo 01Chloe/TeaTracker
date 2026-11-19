@@ -34,6 +34,7 @@
                 <option value="@type">@type.ToLabel()</option>
             }
         </InputSelect>
+        <ValidationMessage For="() => model.TeaType" />
     </div>
 
     <div class="mb-3">
@@ -48,7 +49,7 @@
         <ValidationMessage For="() => model.TeaBagCount" />
     </div>
 
-    <button type="submit" class="btn btn-primary" disabled="@isSubmitting">Ajouter</button>
+    <button type="submit" class="btn btn-outline-primary" disabled="@isSubmitting">Ajouter</button>
     <a href="teas" class="btn btn-link">Annuler</a>
 
 </EditForm>
